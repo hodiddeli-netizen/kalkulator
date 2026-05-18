@@ -1,16 +1,20 @@
 <!DOCTYPE html>
 <html lang="de">
-
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bantra Bau-Kalkulator Enterprise</title>
+    
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#111827">
-    <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22Bantra%20Bau-Kalkulator%22,%22short_name%22:%22Bantra%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22#111827%22,%22theme_color%22:%22#111827%22,%22icons%22:[{%22src%22:%22https://cdn-icons-png.flaticon.com/512/3094/3094833.png%22,%22sizes%22:%22512x512%22,%22type%22:%22image/png%22}]}"><script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script><style>
+    
+    <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22Bantra%20Bau-Kalkulator%22,%22short_name%22:%22Bantra%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22#111827%22,%22theme_color%22:%22#111827%22,%22icons%22:[{%22src%22:%22https://cdn-icons-png.flaticon.com/512/3094/3094833.png%22,%22sizes%22:%22512x512%22,%22type%22:%22image/png%22}]}">
+
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
         .din-link { @apply text-blue-400 underline cursor-pointer hover:text-blue-300 font-mono; }
         input:checked + span { @apply line-through text-gray-500 italic; }
         @media print {
@@ -18,7 +22,102 @@
             .no-print { display: none; }
             .print-box { border: 1px solid #ccc; background: white; color: black; box-shadow: none; max-width: 100%; }
         }
-    </style></head><body class="bg-gray-900 text-gray-100 font-sans p-4 md:p-8"><div class="max-w-3xl mx-auto bg-gray-800 rounded-2xl shadow-xl border border-gray-700 p-6 print-box"><h2 class="text-3xl font-extrabold text-white mb-2 text-center">Bantra Bau-Konfigurator</h2><p class="text-gray-400 text-sm mb-6 text-center no-print">Professionelle SaaS-Umgebung *** *********** Material-Engine.</p><div class="space-y-4 no-print"><div><label class="block text-sm font-medium text-gray-300 mb-1">****** **** Werkstoff suchen</label> <input type="text" id="search-bar" placeholder="Schnellsuche aus 200 Arbeiten (z.B. Dachfenster, Estrich, Schlitze, Fliesen)..." class="block w-full p-3 border border-gray-600 rounded-lg bg-gray-750 text-white focus:ring-2 focus:ring-blue-500 outline-none"></div><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div><label class="block text-sm font-medium text-gray-300 mb-1">1. Kategorie waehlen</label> <select id="hauptgruppe" class="block w-full p-3 border border-gray-600 rounded-lg bg-gray-700 text-white focus:ring-2 focus:ring-blue-500 outline-none">&nbsp;</select></div><div><label class="block text-sm font-medium text-gray-300 mb-1">2. ****** / Arbeit (Reale Materialien)</label> <select id="einzelgewerk" class="block w-full p-3 border border-gray-600 rounded-lg bg-gray-700 text-white focus:ring-2 focus:ring-blue-500 outline-none">&nbsp;</select></div></div><div><label class="block text-sm font-medium text-gray-300">Ausfuehrungs-Qualitaet</label><div class="grid grid-cols-2 gap-4 mt-1"><label class="flex items-center gap-2 p-3 bg-gray-700 rounded-lg cursor-pointer"><input type="radio" name="strategie" value="budget" checked="true"> <span class="text-sm font-bold">****** (******** / DIY)</span>&nbsp;</label> <label class="flex items-center gap-2 p-3 bg-gray-700 rounded-lg cursor-pointer"><input type="radio" name="strategie" value="premium"> <span class="text-sm font-bold">Premium (Profi / High-End)</span>&nbsp;</label></div></div><div><label id="menge-label" class="block text-sm font-medium text-gray-300">Projektgroesse</label> <input type="number" id="menge" value="25" class="mt-1 block w-full p-3 border border-gray-600 rounded-lg bg-gray-700 text-white"></div><button id="calc-btn" class="w-full bg-blue-600 text-white p-3 rounded-lg font-bold hover:bg-blue-500 transition shadow-lg">&nbsp;Projekt-Plan generieren&nbsp;</button></div><div id="ergebnis-box" class="mt-8 border-t border-gray-700 pt-6 hidden space-y-6"><div class="p-4 rounded-xl bg-blue-950/40 border border-blue-800/60 text-white"><h4 class="text-blue-400 font-bold text-sm">************* &amp; ******** (DIN / Fachregeln)</h4><p id="res-text" class="text-sm mt-2 whitespace-pre-line"><br></p></div><div class="p-4 rounded-xl bg-gray-750 border border-gray-700"><h4 class="text-green-400 font-bold text-sm mb-2">Material-************* (Mengen exakt kalkuliert)</h4></div><div class="p-4 rounded-xl bg-gray-750 border border-gray-700"><h4 class="text-amber-400 font-bold text-sm mb-2">Benoetigtes Werkzeug &amp; Zubehoer</h4></div><div class="p-4 rounded-xl bg-gray-750 border border-gray-700"><h4 class="text-indigo-400 font-bold text-sm mb-3">Schritt-fuer-Schritt Baustellen-Checkliste</h4><div id="checkliste-container" class="space-y-2 text-sm text-gray-300"><br></div></div><button onclick="window.print()" class="w-full bg-green-600 hover:bg-green-500 text-white p-3 rounded-lg font-bold transition no-print flex items-center justify-center gap-2">&nbsp;Projektmappe drucken / *** *** speichern&nbsp;</button></div><div class="mt-12 p-4 rounded-xl border border-dashed border-gray-600 bg-gray-850 no-print"><h3 class="text-sm font-mono text-amber-400 font-bold mb-1">Bantra **** Code-Generator</h3><p class="text-xs text-gray-400 mb-4">Exportiere die vollwertige 200-Gewerke-********* als saubere **** f&uuml;r ****** Webserver.</p><div class="grid grid-cols-3 gap-2"><button onclick="exportFile('gewerke.json')" class="bg-gray-700 hover:bg-gray-600 text-white text-xs font-mono p-2 rounded-lg transition border border-gray-600">gewerke.json</button> <button onclick="exportFile('index.html')" class="bg-gray-700 hover:bg-gray-600 text-white text-xs font-mono p-2 rounded-lg transition border border-gray-600">index.html</button> <button onclick="exportFile('app.js')" class="bg-gray-700 hover:bg-gray-600 text-white text-xs font-mono p-2 rounded-lg transition border border-gray-600">app.js</button></div></div></div><div id="legend-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 hidden no-print"><div class="bg-gray-800 border border-gray-700 rounded-xl p-6 max-w-md w-full"><h3 id="modal-title" class="text-xl font-bold text-white mb-2 font-mono"><br></h3><p id="modal-desc" class="text-gray-300 text-sm leading-relaxed"><br></p><button id="close-modal-btn" class="mt-6 w-full bg-gray-700 hover:bg-gray-600 text-white p-2 rounded-lg font-semibold transition">Schlie&szlig;en</button></div></div><script>
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100 font-sans p-4 md:p-8">
+
+    <div class="max-w-3xl mx-auto bg-gray-800 rounded-2xl shadow-xl border border-gray-700 p-6 print-box">
+        <h2 class="text-3xl font-extrabold text-white mb-2 text-center">Bantra Bau-Konfigurator</h2>
+        <p class="text-gray-400 text-sm mb-6 text-center no-print">Professionelle SaaS-Umgebung mit dynamischer Material-Engine.</p>
+
+        <div class="space-y-4 no-print">
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-1">Gewerk oder Werkstoff suchen</label>
+                <input type="text" id="search-bar" placeholder="Schnellsuche aus 200 Arbeiten (z.B. Dachfenster, Estrich, Schlitze, Fliesen)..." class="block w-full p-3 border border-gray-600 rounded-lg bg-gray-750 text-white focus:ring-2 focus:ring-blue-500 outline-none">
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1">1. Kategorie waehlen</label>
+                    <select id="hauptgruppe" class="block w-full p-3 border border-gray-600 rounded-lg bg-gray-700 text-white focus:ring-2 focus:ring-blue-500 outline-none">
+                        </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1">2. Gewerk / Arbeit (Reale Materialien)</label>
+                    <select id="einzelgewerk" class="block w-full p-3 border border-gray-600 rounded-lg bg-gray-700 text-white focus:ring-2 focus:ring-blue-500 outline-none">
+                        </select>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-300">Ausfuehrungs-Qualitaet</label>
+                <div class="grid grid-cols-2 gap-4 mt-1">
+                    <label class="flex items-center gap-2 p-3 bg-gray-700 rounded-lg cursor-pointer">
+                        <input type="radio" name="strategie" value="budget" checked>
+                        <span class="text-sm font-bold">Budget (Standard / DIY)</span>
+                    </label>
+                    <label class="flex items-center gap-2 p-3 bg-gray-700 rounded-lg cursor-pointer">
+                        <input type="radio" name="strategie" value="premium">
+                        <span class="text-sm font-bold">Premium (Profi / High-End)</span>
+                    </label>
+                </div>
+            </div>
+
+            <div>
+                <label id="menge-label" class="block text-sm font-medium text-gray-300">Projektgroesse</label>
+                <input type="number" id="menge" value="25" class="mt-1 block w-full p-3 border border-gray-600 rounded-lg bg-gray-700 text-white">
+            </div>
+
+            <button id="calc-btn" class="w-full bg-blue-600 text-white p-3 rounded-lg font-bold hover:bg-blue-500 transition shadow-lg">
+                Projekt-Plan generieren
+            </button>
+        </div>
+
+        <div id="ergebnis-box" class="mt-8 border-t border-gray-700 pt-6 hidden space-y-6">
+            <div class="p-4 rounded-xl bg-blue-950/40 border border-blue-800/60 text-white">
+                <h4 class="text-blue-400 font-bold text-sm">Systemvorgabe & Baurecht (DIN / Fachregeln)</h4>
+                <p id="res-text" class="text-sm mt-2 whitespace-pre-line"></p>
+            </div>
+            <div class="p-4 rounded-xl bg-gray-750 border border-gray-700">
+                <h4 class="text-green-400 font-bold text-sm mb-2">Material-Einkaufsliste (Mengen exakt kalkuliert)</h4>
+                <ul id="material-liste" class="list-disc list-inside text-sm text-gray-300 space-y-1"></ul>
+            </div>
+            <div class="p-4 rounded-xl bg-gray-750 border border-gray-700">
+                <h4 class="text-amber-400 font-bold text-sm mb-2">Benoetigtes Werkzeug & Zubehoer</h4>
+                <ul id="werkzeug-liste" class="list-disc list-inside text-sm text-gray-300 space-y-1"></ul>
+            </div>
+            <div class="p-4 rounded-xl bg-gray-750 border border-gray-700">
+                <h4 class="text-indigo-400 font-bold text-sm mb-3">Schritt-fuer-Schritt Baustellen-Checkliste</h4>
+                <div id="checkliste-container" class="space-y-2 text-sm text-gray-300"></div>
+            </div>
+            <button onclick="window.print()" class="w-full bg-green-600 hover:bg-green-500 text-white p-3 rounded-lg font-bold transition no-print flex items-center justify-center gap-2">
+                Projektmappe drucken / Als PDF speichern
+            </button>
+        </div>
+
+        <div class="mt-12 p-4 rounded-xl border border-dashed border-gray-600 bg-gray-850 no-print">
+            <h3 class="text-sm font-mono text-amber-400 font-bold mb-1">Bantra SaaS Code-Generator</h3>
+            <p class="text-xs text-gray-400 mb-4">Exportiere die vollwertige 200-Gewerke-Datenbank als saubere JSON für deinen Webserver.</p>
+            <div class="grid grid-cols-3 gap-2">
+                <button onclick="exportFile('gewerke.json')" class="bg-gray-700 hover:bg-gray-600 text-white text-xs font-mono p-2 rounded-lg transition border border-gray-600">gewerke.json</button>
+                <button onclick="exportFile('index.html')" class="bg-gray-700 hover:bg-gray-600 text-white text-xs font-mono p-2 rounded-lg transition border border-gray-600">index.html</button>
+                <button onclick="exportFile('app.js')" class="bg-gray-700 hover:bg-gray-600 text-white text-xs font-mono p-2 rounded-lg transition border border-gray-600">app.js</button>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="legend-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 hidden no-print">
+        <div class="bg-gray-800 border border-gray-700 rounded-xl p-6 max-w-md w-full">
+            <h3 id="modal-title" class="text-xl font-bold text-white mb-2 font-mono"></h3>
+            <p id="modal-desc" class="text-gray-300 text-sm leading-relaxed"></p>
+            <button id="close-modal-btn" class="mt-6 w-full bg-gray-700 hover:bg-gray-600 text-white p-2 rounded-lg font-semibold transition">Schließen</button>
+        </div>
+    </div>
+
+    <script>
         let gewerkeDaten = {};
 
         const legende = {
@@ -435,5 +534,5 @@
             link.click();
         }
     </script>
-<div style="color: red">Word to HTML Testversion - bitte <a href="https://wordtohtml.net/site/payment">Gehen Sie PRO</a>, um vollständiges HTML zu erhalten.</div>
-</body></html>
+</body>
+</html>
