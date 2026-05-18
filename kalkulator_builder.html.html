@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bantra Bau-Kalkulator Enterprise</title>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#111827">
+    <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22Bantra%20Bau-Kalkulator%22,%22short_name%22:%22Bantra%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22#111827%22,%22theme_color%22:%22#111827%22,%22icons%22:[{%22src%22:%22https://cdn-icons-png.flaticon.com/512/3094/3094833.png%22,%22sizes%22:%22512x512%22,%22type%22:%22image/png%22}]}"><script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script><style>
+        .din-link { @apply text-blue-400 underline cursor-pointer hover:text-blue-300 font-mono; }
+        input:checked + span { @apply line-through text-gray-500 italic; }
+        @media print {
+            body { background: white; color: black; padding: 0; }
+            .no-print { display: none; }
+            .print-box { border: 1px solid #ccc; background: white; color: black; box-shadow: none; max-width: 100%; }
+        }
+    </style></head><body class="bg-gray-900 text-gray-100 font-sans p-4 md:p-8"><div class="max-w-3xl mx-auto bg-gray-800 rounded-2xl shadow-xl border border-gray-700 p-6 print-box"><h2 class="text-3xl font-extrabold text-white mb-2 text-center">Bantra Bau-Konfigurator</h2><p class="text-gray-400 text-sm mb-6 text-center no-print">Professionelle SaaS-Umgebung *** *********** Material-Engine.</p><div class="space-y-4 no-print"><div><label class="block text-sm font-medium text-gray-300 mb-1">****** **** Werkstoff suchen</label> <input type="text" id="search-bar" placeholder="Schnellsuche aus 200 Arbeiten (z.B. Dachfenster, Estrich, Schlitze, Fliesen)..." class="block w-full p-3 border border-gray-600 rounded-lg bg-gray-750 text-white focus:ring-2 focus:ring-blue-500 outline-none"></div><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div><label class="block text-sm font-medium text-gray-300 mb-1">1. Kategorie waehlen</label> <select id="hauptgruppe" class="block w-full p-3 border border-gray-600 rounded-lg bg-gray-700 text-white focus:ring-2 focus:ring-blue-500 outline-none">&nbsp;</select></div><div><label class="block text-sm font-medium text-gray-300 mb-1">2. ****** / Arbeit (Reale Materialien)</label> <select id="einzelgewerk" class="block w-full p-3 border border-gray-600 rounded-lg bg-gray-700 text-white focus:ring-2 focus:ring-blue-500 outline-none">&nbsp;</select></div></div><div><label class="block text-sm font-medium text-gray-300">Ausfuehrungs-Qualitaet</label><div class="grid grid-cols-2 gap-4 mt-1"><label class="flex items-center gap-2 p-3 bg-gray-700 rounded-lg cursor-pointer"><input type="radio" name="strategie" value="budget" checked="true"> <span class="text-sm font-bold">****** (******** / DIY)</span>&nbsp;</label> <label class="flex items-center gap-2 p-3 bg-gray-700 rounded-lg cursor-pointer"><input type="radio" name="strategie" value="premium"> <span class="text-sm font-bold">Premium (Profi / High-End)</span>&nbsp;</label></div></div><div><label id="menge-label" class="block text-sm font-medium text-gray-300">Projektgroesse</label> <input type="number" id="menge" value="25" class="mt-1 block w-full p-3 border border-gray-600 rounded-lg bg-gray-700 text-white"></div><button id="calc-btn" class="w-full bg-blue-600 text-white p-3 rounded-lg font-bold hover:bg-blue-500 transition shadow-lg">&nbsp;Projekt-Plan generieren&nbsp;</button></div><div id="ergebnis-box" class="mt-8 border-t border-gray-700 pt-6 hidden space-y-6"><div class="p-4 rounded-xl bg-blue-950/40 border border-blue-800/60 text-white"><h4 class="text-blue-400 font-bold text-sm">************* &amp; ******** (DIN / Fachregeln)</h4><p id="res-text" class="text-sm mt-2 whitespace-pre-line"><br></p></div><div class="p-4 rounded-xl bg-gray-750 border border-gray-700"><h4 class="text-green-400 font-bold text-sm mb-2">Material-************* (Mengen exakt kalkuliert)</h4></div><div class="p-4 rounded-xl bg-gray-750 border border-gray-700"><h4 class="text-amber-400 font-bold text-sm mb-2">Benoetigtes Werkzeug &amp; Zubehoer</h4></div><div class="p-4 rounded-xl bg-gray-750 border border-gray-700"><h4 class="text-indigo-400 font-bold text-sm mb-3">Schritt-fuer-Schritt Baustellen-Checkliste</h4><div id="checkliste-container" class="space-y-2 text-sm text-gray-300"><br></div></div><button onclick="window.print()" class="w-full bg-green-600 hover:bg-green-500 text-white p-3 rounded-lg font-bold transition no-print flex items-center justify-center gap-2">&nbsp;Projektmappe drucken / *** *** speichern&nbsp;</button></div><div class="mt-12 p-4 rounded-xl border border-dashed border-gray-600 bg-gray-850 no-print"><h3 class="text-sm font-mono text-amber-400 font-bold mb-1">Bantra **** Code-Generator</h3><p class="text-xs text-gray-400 mb-4">Exportiere die vollwertige 200-Gewerke-********* als saubere **** f&uuml;r ****** Webserver.</p><div class="grid grid-cols-3 gap-2"><button onclick="exportFile('gewerke.json')" class="bg-gray-700 hover:bg-gray-600 text-white text-xs font-mono p-2 rounded-lg transition border border-gray-600">gewerke.json</button> <button onclick="exportFile('index.html')" class="bg-gray-700 hover:bg-gray-600 text-white text-xs font-mono p-2 rounded-lg transition border border-gray-600">index.html</button> <button onclick="exportFile('app.js')" class="bg-gray-700 hover:bg-gray-600 text-white text-xs font-mono p-2 rounded-lg transition border border-gray-600">app.js</button></div></div></div><div id="legend-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 hidden no-print"><div class="bg-gray-800 border border-gray-700 rounded-xl p-6 max-w-md w-full"><h3 id="modal-title" class="text-xl font-bold text-white mb-2 font-mono"><br></h3><p id="modal-desc" class="text-gray-300 text-sm leading-relaxed"><br></p><button id="close-modal-btn" class="mt-6 w-full bg-gray-700 hover:bg-gray-600 text-white p-2 rounded-lg font-semibold transition">Schlie&szlig;en</button></div></div><script>
+        let gewerkeDaten = {};
+
+        const legende = {
+            "DIN 1045": "Regelt Tragwerke aus Beton, Stahlbeton und Spannbeton.",
+            "DIN 18560": "Norm für Estriche im Bauwesen. Bestimmt Mindestdicken, Festigkeitsklassen und Belegreife.",
+            "DIN 18533": "Abdichtung von erdberührten Bauteilen (z. B. Kellerwände gegen Feuchtigkeit).",
+            "DIN 18181": "Verarbeitung von Gipsplatten im Trockenbau.",
+            "DIN EN 14195": "Norm für Trockenbau-Metallprofile (0,6mm Blech, verzinkt).",
+            "DIN 18550": "Planung, Zubereitung und Ausführung von Außen- und Innenputzen.",
+            "DIN 18015": "Elektrische Anlagen in Wohngebäuden - Regelt Installationszonen für Leitungen in Wänden.",
+            "DIN EN 12056": "Norm für Abwasserleitungen und Regenrinnen innerhalb/am Gebäude.",
+            "DIN 18352": "Fliesen- und Plattenarbeiten bei Boden- und Wandflächen.",
+            "DIN 18365": "Bodenbelagarbeiten (Laminat, Parkett, PVC) und Untergrundvorbereitung."
+        };
+
+        function getKomponentenFuerGewerk(name, kategorie, strategie) {
+            const n = name.toLowerCase();
+            let res = { material: [], werkzeug: [], schritte: [] };
+            const isPremium = (strategie === 'premium');
+
+            if (kategorie === "waende") {
+                if (n.includes("mauern") || n.includes("mauerwerk")) {
+                    res.material = isPremium ? 
+                        ["11.0 Stueck Kalksandstein-Plansteine", "5.0 kg Duennbettmoertel hochfest", "0.5 Stueck Edelstahl-Mauerverbinder"] :
+                        ["8.0 Stueck Porenbeton-Plansteine", "4.0 kg Duennbettmoertel Standard", "0.2 Stueck Ankernaegel"];
+                    res.werkzeug = ["Plankelle", "Porenbetonsaege", "Gummihammer", "Wasserwaage"];
+                } else if (n.includes("putz") || n.includes("verputzen")) {
+                    res.material = isPremium ? 
+                        ["14.0 kg Kalk-Zement-Leichtputz", "1.1 m² Armierungsgewebe alkaliresistent", "0.2 Liter Premium-Aufbrennsperre"] :
+                        ["10.0 kg Gips-Glaettputz", "0.15 Liter Standard-Tiefengrund"];
+                    res.werkzeug = ["Kartätsche", "Putzwerfer / Traufel", "Schwammbrett", "Glaettkelle"];
+                } else if (n.includes("fliesen") || n.includes("fliesenspiegel")) {
+                    res.material = isPremium ?
+                        ["1.05 m² Premium-Feinsteinzeugfliesen", "3.5 kg Flexmoertel S1", "0.6 kg High-End Fugenbunt", "0.1 Stueck Silikonkartusche"] :
+                        ["1.02 m² Keramik-Wandfliesen", "3.0 kg Standard-Fliesenkleber", "0.5 kg Fugendicht"];
+                    res.werkzeug = ["Fliesenschneidmaschine", "Zahnkelle 8mm", "Gummiwischer", "Fliesenkeile"];
+                } else if (n.includes("daemmung") || n.includes("wdvs")) {
+                    res.material = isPremium ?
+                        ["1.02 m² Mineralwolle-Daemmplatten WLG 035", "6.0 kg Klebe- und Armierungsmoertel", "5.0 Stueck Tellerduebel mit Stahlpreis", "1.1 m² Gewebe"] :
+                        ["1.02 m² EPS-Styroporplatten WLG 040", "5.0 kg Systemkleber", "4.0 Stueck Kunststoff-Schlagduebel"];
+                    res.werkzeug = ["Daemmstoffmesser", "Schlagbohrmaschine", "Zahnkelle 10mm", "Geruest"];
+                } else {
+                    res.material = ["1.05 m² Systembaustoffe Wand Pro", "0.25 kg Haftbruecke / Grundierung", "12.0 Stueck Systemschrauben / Duebel"];
+                    res.werkzeug = ["Akkuschrauber", "Maler-Walzenset", "Cuttermesser", "Richtscheit"];
+                }
+            }
+            else if (kategorie === "boeden") {
+                if (n.includes("estrich")) {
+                    res.material = isPremium ?
+                        ["42.0 kg CAF Anhydrit-Fliessestrich", "1.0 Meter Randdaemmstreifen 10mm", "1.05 m² PE-Abdeckfolie"] :
+                        ["40.0 kg CT Zementestrich-Sackware", "1.0 Meter Standard-Randstreifen", "0.2 kg Haftbruecke"];
+                    res.werkzeug = ["Schwabbelstange", "Alu-Richtscheit", "Nivellier-Dreibeine", "Estrichmischer"];
+                } else if (n.includes("fliesen")) {
+                    res.material = isPremium ?
+                        ["1.05 m² Grossformat-Bodenfliesen", "4.5 kg Flexkleber hochelastisch", "0.8 kg Fugenmoertel wasserabweisend"] :
+                        ["1.02 m² Standard-Bodenfliesen", "3.5 kg Fliesenkleber Grau", "0.6 kg Standard-Fugenmasse"];
+                    res.werkzeug = ["Nassschneidetisch", "Zahnkelle 10mm / Mittelbett", "Fliesennivelliersystem"];
+                } else if (n.includes("laminat") || n.includes("parkett") || n.includes("vinyl")) {
+                    res.material = isPremium ?
+                        ["1.05 m² Klick-Vinyl / Parkett Premium", "1.02 m² High-End Alu-Trittschalldaemmung (Schwermatte)", "1.2 Meter Premium-Sockelleiste"] :
+                        ["1.04 m² Standard-Laminat / Vinyl", "1.02 m² PE-Schaumfolie Trittschall", "1.0 Meter MDF-Sockelleiste"];
+                    res.werkzeug = ["Kappsaegue / Laminatschneider", "Zugeisen & Schlagklotz", "Abstandsabstecker", "Stichsaege"];
+                } else {
+                    res.material = ["1.05 m² Bodenbelag / Ausgleichsmasse", "0.3 kg Spezial-Grundierung", "1.1 Meter Uebergangsprofile"];
+                    res.werkzeug = ["Stachelwalze", "Ruehrwerk", "Zahnrakel", "Schlagschnur"];
+                }
+            }
+            else if (kategorie === "decke_dach") {
+                if (n.includes("dachfenster")) {
+                    res.material = isPremium ?
+                        ["1.0 Stueck Schwing- / Klapp-Dachfenster Premium (Holz/Kunststoff)", "1.0 Stueck EDW Eindeckrahmen tief", "1.0 Stueck BDX Daemm- und Anschlussset", "1.0 Stueck BBX Dampfsperrschuerze"] :
+                        ["1.0 Stueck Standard-Dachfenster", "1.0 Stueck Standard-Eindeckrahmen", "1.0 Rolle Bitumen-Dichtband", "0.5 Kartusche Dichtkleber"];
+                    res.werkzeug = ["Stichsaege", "Akkuschrauber", "Zimmermannshammer", "Dachdecker-Werkzeugguertel"];
+                } else if (n.includes("rinne") || n.includes("dachrinne")) {
+                    res.material = isPremium ?
+                        ["1.05 Meter Titanzink-Dachrinne (halbrund)", "1.1 Stueck Verzinkte Rinneneisen", "0.1 kg Spezial-Loetzinn", "0.05 Liter Flussmittel"] :
+                        ["1.05 Meter Kunststoff-Dachrinne", "1.0 Stueck Rinnenhalter Kunststoff", "0.2 Stueck Rinnenverbinder / Endkappen"];
+                    res.werkzeug = ["Biegezange fuer Rinneneisen", "Loetkolben (Propan)", "Metallsaege", "Richtschnur"];
+                } else if (n.includes("abhaengen") || n.includes("trockenbau")) {
+                    res.material = isPremium ?
+                        ["1.1 m² Impraegnierte Hartgipsplatten (GKFI)", "2.5 Meter CD-Deckenprofil 0.6mm", "1.2 Stueck Direktabhaenger klick", "18.0 Stueck Schnellbauschrauben"] :
+                        ["1.1 m² Standard-Gipskartonplatten (GKB)", "2.1 Meter Holz-Dachlatten (40x60)", "15.0 Stueck Holzschrauben"];
+                    res.werkzeug = ["Plattenheber / Deckenstuetze", "Kreuzlinienlaser", "Blechschere", "Trockenbauschrauber"];
+                } else if (n.includes("daemmung") || n.includes("klemmfilz")) {
+                    res.material = isPremium ?
+                        ["1.02 m² Mineralwolle-Klemmfilz WLG 032", "1.05 m² Klimamembran (feuchtevariabel)", "1.5 Rollen System-Dichtband", "0.5 Kartusche Folienkleber"] :
+                        ["1.02 m² Glaswolle-Klemmfilz WLG 035", "1.05 m² Standard-Dampfbremsfolie PE", "1.0 Rolle Stoss-Klebeband"];
+                    res.werkzeug = ["Daemmstoffmesser", "Handtacker", "Tackerklammern 8mm", "Geruest"];
+                } else {
+                    res.material = ["1.05 m² Dach- & Decken-Systembaustoffe", "1.1 Stueck Konstruktionsschrauben", "0.15 Kartusche Universaldichtstoff"];
+                    res.werkzeug = ["Handkreissaege", "Bohrmaschine", "Universalsaege", "Schmiege"];
+                }
+            }
+            else if (kategorie === "leitungen") {
+                if (n.includes("schlitze") || n.includes("fraesen")) {
+                    res.material = isPremium ?
+                        ["0.5 kg Profi-Blitzzement / Systemspachtel", "2.0 Stueck Kabel- / Rohrschellen hochfest", "0.1 Stueck Meissel-Verschleissfaktor"] :
+                        ["0.4 kg Elektrikergips Standard", "2.0 Stueck Standard-Nagelschellen"];
+                    res.werkzeug = ["Mauernutfraese (Doppelscheibe)", "Industriestaubsauger Klasse M", "Bohrhammer", "Gipspfanne & Spachtel"];
+                } else if (n.includes("kabel") || n.includes("leitung") || n.includes("nym")) {
+                    res.material = isPremium ?
+                        ["1.05 Meter NYM-J oder Cat7 Erd- und Datenleitung rein Kupfer", "1.05 Meter Flex-Installationsrohr (flammwidrig)", "0.1 Stueck Verbindungsclips"] :
+                        ["1.03 Meter Standard NYM-J Installationskabel", "0.5 Meter Klemmen / ISO-Band"];
+                    res.werkzeug = ["Abisolierzange", "Kabel-Einziehband (Nut)", "Seitenschneider", "Duspol Spannungspruefer"];
+                } else if (n.includes("rohr") || n.includes("wasser") || n.includes("abwasser")) {
+                    res.material = isPremium ?
+                        ["1.05 Meter Alu-Mehrschichtverbundrohr (isoliert)", "1.1 Stueck Pressfittings Messing", "0.2 Stueck Rohrhalterungen schallentkoppelt"] :
+                        ["1.03 Meter HT-Abwasserrohr / PP-Rohr", "0.3 Stueck Steckmuffen / Gleitmittel", "0.2 Stueck Standard-Rohrschellen"];
+                    res.werkzeug = ["Akku-Presszange", "Rohrabschneider & Kalibrierer", "Gleitmittel fuer Rohre", "Schraubenschluessel-Set"];
+                } else {
+                    res.material = ["1.05 Meter Infrastruktur-Leitung / Traeger", "2.0 Stueck Systemhalterungen", "0.1 Stueck Kennzeichnungsbaender"];
+                    res.werkzeug = ["Crimpzange", "Lochsaege", "Akku-Bohrschrauber", "Phasenpruefer"];
+                }
+            }
+
+            res.schritte = isPremium ? [
+                "Untergrund lasergenau einmessen, reinigen und mit Spezialgrundierung vorbehandeln.",
+                "Premium-Systemkomponenten exakt nach Herstellervorgabe blasenfrei verarbeiten.",
+                "Anschluesse und Uebergaenge nach DIN-Fachregeln dauerelastisch/luftdicht versiegeln.",
+                "Pruefprotokoll (Druck-, Durchgangs- oder Masspruefung) erstellen und dokumentieren."
+            ] : [
+                "Untergrund grob reinigen und auf Tragfaehigkeit pruefen.",
+                "Material zuschneiden, anmischen und fachgerecht aufbringen.",
+                "Befestigungen kontrollieren und Trocknungszeiten laut Verpackung einhalten."
+            ];
+
+            return res;
+        }
+
+        function generiereDatenbank() {
+            const rohdaten = {
+                "waende": {
+                    "label": "WAENDE (Innen- & Aussenwaende, Putz, Sanierung)",
+                    "einheit": "m²", "val": 25, "din": "DIN 18550",
+                    "items": [
+                        "Aussenwand aufmauern (Standard)", "Innenwand stellen (System Knauf)", "Innenwand verputzen (Gips)", "Aussenputz zweilagig", "WDVS EPS-Daemmung anbringen", 
+                        "Kellerwand-Abdichtung aussen", "Klinkerfassade impraegnieren", "Risse im Mauerwerk verpressen", "Wandflaechen spachteln Q3", "Wandfliesen verlegen", 
+                        "Altputz abschlagen & sanieren", "Horizontalsperre injizieren", "Wandanstrich mit Silikatfarbe", "Tapezierarbeiten Vlies", "Fenstersturz einbauen", 
+                        "Trockenbau-Vorsatzschale", "Gipskarton Trennwand doppelt", "Schallschutzwand aufstellen", "Porenbeton Trennwand", "Kalksandstein Sichtmauerwerk",
+                        "Glasbausteine einsetzen", "Fachwerkwand ausmauern", "Wandnische stemmen", "Brandschutzbekleidung Wand", "Dampfsperre Wand montieren",
+                        "Bruchsteinmauerwerk verfugen", "Lehmputz auftragen", "Feuchtraum-Wandplatten", "Fliesenspiegel Kueche", "Stuckprofile ankleben",
+                        "Sockelputz wasserabweisend", "Wandflaechen schleifen", "Grundierung / Tiefengrund", "Fugen im Mauerwerk sanieren", "Holzverkleidung Wand",
+                        "Akustikpaneele Wand", "Asbestsanierung Wand (Profi)", "Schimmelbeseitigung Wand", "Wanddurchbruch tragend", "Wanddurchbruch nichttragend",
+                        "Zierklinker kleben", "Wandheizung Trockenbau", "Spachteltechnik Stucco", "Glasgewebe tapezieren", "Kellerinnenwand-Abdichtung",
+                        "Sanierputz auf feuchtem Mauerwerk", "Verblendmauerwerk erstellen", "U-Wert Optimierung Wand", "Wandanker setzen", "Bauwerkstrocknung Wand"
+                    ]
+                },
+                "boeden": {
+                    "label": "BOEDEN (Unterbau, Estriche, Belaege)",
+                    "einheit": "m²", "val": 30, "din": "DIN 18560",
+                    "items": [
+                        "Zementestrich CT einbringen", "Anhydrit-Fliessestrich verlegen", "Boden ausgleichen / Nivellierung", "Bodenfliesen im Duennbett", "Laminatboden verlegen", 
+                        "Fertigparkett schwimmend", "Massivholzparkett verkleben", "Vinylboden Klick-System", "Fussbodenheizung Fraessystem", "Epoxidharz-Beschichtung Garage", 
+                        "Balkonabdichtung Gefaelle", "Teppichboden verkleben", "Sockelleisten montieren", "Estrichrisse verklammern", "Trittschalldaemmung verlegen",
+                        "Industrieboden schwerlast", "PVC-Designbelag", "Korkboden verlegen", "Trockenunterboden (GIFA)", "Sauberkeitsschicht Beton",
+                        "Bodenplatte daemmen (XPS)", "Designestrich geschliffen", "Linoleum Belag", "Natursteinplatten Boden", "Fliesen im Mittelbett",
+                        "Teppichfliesen lose verlegt", "Bodenkonstruktion Holzbalken", "OSB-Platten auf Balken", "Entkopplungsmatte verlegen", "Abdichtung unter Fliesen",
+                        "Estrich auf Trennschicht", "Estrich auf Daemmschicht", "Heizestrich belegen", "Feuchtigkeitssperre Betonplatte", "Noppenbahnen Unterbau",
+                        "Hoehenausgleich Schuettung", "Sportboden elastisch", "Doppelbodensystem Buero", "Hohlraumboden Kabeltraeger", "Terrazzo Boden restaurieren",
+                        "Fliesenfugen erneuern", "Parkett abschleifen & oelen", "Bodenlukenrahmen setzen", "Drainagematte Balkon", "Schwalbenschwanzplatten",
+                        "Gussasphaltestrich", "Magnesiaestrich", "Bodenversiegelung PU", "Treppenstufen fliesen", "Sauberlaufzone eingiessen"
+                    ]
+                },
+                "decke_dach": {
+                    "label": "DECKE & DACH (Dachstuhl, Daemmung, Trockenbau)",
+                    "einheit": "m²", "val": 20, "din": "DIN 18181",
+                    "items": [
+                        "Decke abhaengen Gipskarton", "Unterkonstruktion Holzlatten", "Deckenflaechen Q2 spachteln", "Zwischensparrendaemmung Klemmfilz", "Dampfbremsfolie montieren", 
+                        "Untersparrendaemmung", "Dachrinne Titanzink", "Fallrohr Ablaufmontage", "Dachfenster Einbau", "Kehlbalkendecke daemmen", 
+                        "Akustikdecke Lochplatten", "Dachkasten Holzverkleidung", "Schornsteineinfassung Zink", "Dachziegel eindecken", "Flachdach-Abdichtung Bitumen",
+                        "Dachdurchfuehrung lueften", "Aufsparrendaemmung Holzfaser", "Dachueberstand streichen", "Dachbalken verstaerken", "Dachbodendaemmung begehbar",
+                        "Spanndecke montieren", "Rauchmelder-Netzwerk Decke", "Lichtvierung Trockenbaudecke", "Stuckrosetten Decke", "Unterdecke Brandschutz F90",
+                        "Flachdach Begruenung", "Dachfenstrollladen Elektro", "Weichachskanten Daemmung", "Kniestock Trockenbau", "Dachgaube verkleiden",
+                        "Traufblech montieren", "Ortgangblech setzen", "Schneefangsystem Dach", "Dachleiter / Laufrost", "Firstziegel trocken verlegen",
+                        "Gratziegel einbinden", "Dachflaechenfenster austauschen", "Flachdach Gully reinigen", "Dampfsperre Flachdach", "Dachschalung Rauhspund",
+                        "Dachpappe nageln vierteilig", "Unterdeckbahn diffusionsoffen", "Schafwolldaemmung Dach", "Zellulose Einblasdaemmung", "Dachreparatur Sturmschaden",
+                        "Dachrinne Kunststoff", "Rinnenheizung Frostschutz", "Laubschutzgitter Rinne", "Sichtdachstuhl schleifen", "Deckenputz Ausbesserung"
+                    ]
+                },
+                "leitungen": {
+                    "label": "LEITUNGEN & INFRASTRUKTUR (Strom, Wasser, Abwasser)",
+                    "einheit": "Meter", "val": 15, "din": "DIN 18015",
+                    "items": [
+                        "Kabelschlitze fraesen", "Unterputzdosen einsetzen", "NYM-Kabel im Lehrrohr", "Netzwerkkabel Cat7", "Unterverteilung / Kasten", 
+                        "Alu-Verbundrohr Wasser", "HT-Abwasserrohr verlegen", "Wandheizung Rohrsystem", "Kernbohrung bis 150mm", "Fundamenterder legen", 
+                        "Zaehlerplatz einrichten", "SAT-Anlage Koaxialkabel", "Erdkabel Aussenbereich", "Durchlauferhitzer Montage", "Hebeanlage Abwasser",
+                        "Leerrohrsystem Beton", "Potenzialausgleich Schiene", "Steckdosen / Schalter finish", "LED-Strip Profil einlassen", "Herdanschlussdose setzen",
+                        "Zirkulationsleitung Wasser", "Druckminderer Hausstation", "Wasserzaehlergarnitur", "Gartenwasserleitung frostsicher", "Regenwassernutzung Rohr",
+                        "Mehrsparten-Hauseinfuehrung", "Gasleitung Kupfer gepresst", "Klimasplitgeraet Leitung", "Photovoltaik Solarkabel", "Wallbox Ladekabel 22kW",
+                        "Gegensprechanlage Bus-System", "Rauchansaugsystem Rohr", "Zentralsauganlage Rohr", "Fussbodenheizung Verteiler", "Handtuchheizkoerper Rohr",
+                        "Duschrinne Abwasseranschluss", "Vorwandelement WC verrohren", "Aussenwasserhahn KM", "Brandschutzmanschette Rohr", "Kabelrinne Deckenmontage",
+                        "Erdung Dachantenne", "Ueberspannungsschutz Typ 2", "FI-Schutzschalter nachruesten", "Fuenfadriges Hauptkabel", "Telefonleitung J-Y(St)Y",
+                        "Glasfaserkabel Inhouse", "Smartech KNX-Steuerleitung", "Heizungsbefuellstation", "Abwasser-Schallschutzrohr", "Dichtigkeitspruefung Wasser"
+                    ]
+                }
+            };
+
+            for (const [katKey, daten] of Object.entries(rohdaten)) {
+                gewerkeDaten[katKey] = { label: daten.label, arbeiten: {} };
+
+                daten.items.forEach((name, index) => {
+                    const id = `${katKey}_item_${index + 1}`;
+                    
+                    // Spezifische Einheiten-Zuweisung je nach Gewerk-Typ im Namen
+                    let aktuelleEinheit = daten.einheit; 
+                    let standardMenge = daten.val;
+                    
+                    if (name.toLowerCase().includes("fenster") && !name.toLowerCase().includes("dämmung")) {
+                        aktuelleEinheit = "Stueck";
+                        standardMenge = 1;
+                    } else if (name.toLowerCase().includes("rinne") || name.toLowerCase().includes("leitung") || name.toLowerCase().includes("kabel") || name.toLowerCase().includes("rohr") || name.toLowerCase().includes("schlitze")) {
+                        aktuelleEinheit = "Meter";
+                        standardMenge = 15;
+                    }
+
+                    const bData = getKomponentenFuerGewerk(name, katKey, 'budget');
+                    const pData = getKomponentenFuerGewerk(name, katKey, 'premium');
+
+                    gewerkeDaten[katKey].arbeiten[id] = {
+                        name: name,
+                        einheit: aktuelleEinheit,
+                        standard_wert: standardMenge,
+                        budget: {
+                            info: `Werkstueck: ${name}.\nRegulaere Installation im Standard-Verfahren nach anerkannten Regeln der Technik und ${daten.din}.`,
+                            material: bData.material,
+                            werkzeug: bData.werkzeug,
+                            schritte: bData.schritte
+                        },
+                        premium: {
+                            info: `Werkstueck: High-End ${name}.\nAusfuehrung in gehobener Meister-Qualitaet nach ${daten.din} mit verlaengerter Systemgarantie und Premium-Markenbaustoffen.`,
+                            material: pData.material,
+                            werkzeug: pData.werkzeug,
+                            schritte: pData.schritte
+                        }
+                    };
+                });
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            generiereDatenbank(); 
+            initHauptgruppen();
+            initEventListeners();
+            
+            if ('serviceWorker' in navigator) {
+                const code = "self.addEventListener('fetch', function(e){});";
+                const blob = new Blob([code], {type: 'text/javascript'});
+                const url = URL.createObjectURL(blob);
+                navigator.serviceWorker.register(url);
+            }
+        });
+
+        function initHauptgruppen() {
+            const htmlSelect = document.getElementById('hauptgruppe');
+            htmlSelect.innerHTML = "";
+            for (const [key, group] of Object.entries(gewerkeDaten)) {
+                const opt = document.createElement('option');
+                opt.value = key;
+                opt.textContent = group.label;
+                htmlSelect.appendChild(opt);
+            }
+            updateEinzelgewerke();
+        }
+
+        function updateEinzelgewerke() {
+            const hk = document.getElementById('hauptgruppe').value;
+            const ezSelect = document.getElementById('einzelgewerk');
+            ezSelect.innerHTML = "";
+
+            if (!hk || !gewerkeDaten[hk]) return;
+
+            const arbeiten = gewerkeDaten[hk].arbeiten;
+            for (const [key, arb] of Object.entries(arbeiten)) {
+                const opt = document.createElement('option');
+                opt.value = key;
+                opt.textContent = arb.name;
+                ezSelect.appendChild(opt);
+            }
+            updateMengeLabel();
+        }
+
+        function initEventListeners() {
+            document.getElementById('hauptgruppe').addEventListener('change', updateEinzelgewerke);
+            document.getElementById('einzelgewerk').addEventListener('change', updateMengeLabel);
+            document.getElementById('search-bar').addEventListener('input', filterBySearch);
+            document.getElementById('calc-btn').addEventListener('click', berechneProjekt);
+            document.getElementById('close-modal-btn').addEventListener('click', closeLegend);
+        }
+
+        function updateMengeLabel() {
+            const hk = document.getElementById('hauptgruppe').value;
+            const ek = document.getElementById('einzelgewerk').value;
+            if(!hk || !ek) return;
+            
+            const arb = gewerkeDaten[hk].arbeiten[ek];
+            document.getElementById('menge-label').textContent = `Projektgroesse / Menge (Einheit: ${arb.einheit})`;
+            document.getElementById('menge').value = arb.standard_wert;
+        }
+
+        function filterBySearch() {
+            const val = document.getElementById('search-bar').value.toLowerCase();
+            if (!val) return;
+
+            for (const [hk, g] of Object.entries(gewerkeDaten)) {
+                for (const [ek, arb] of Object.entries(g.arbeiten)) {
+                    if (arb.name.toLowerCase().includes(val)) {
+                        document.getElementById('hauptgruppe').value = hk;
+                        updateEinzelgewerke();
+                        document.getElementById('einzelgewerk').value = ek;
+                        updateMengeLabel();
+                        return;
+                    }
+                }
+            }
+        }
+
+        function berechneProjekt() {
+            const hk = document.getElementById('hauptgruppe').value;
+            const ek = document.getElementById('einzelgewerk').value;
+            if(!hk || !ek) return;
+
+            const gewerkObj = gewerkeDaten[hk].arbeiten[ek];
+            const strat = document.querySelector('input[name="strategie"]:checked').value;
+            const mVal = parseFloat(document.getElementById('menge').value);
+
+            if (isNaN(mVal) || mVal <= 0) {
+                alert("Bitte gib eine gueltige Projektgroesse ein.");
+                return;
+            }
+
+            const d = gewerkObj[strat];
+
+            let txt = d.info;
+            Object.keys(legende).forEach(din => {
+                const r = new RegExp(din, "g");
+                txt = txt.replace(r, `<span class='din-link' onclick='openLegend("${din}")'>${din}</span>`);
+            });
+            document.getElementById('res-text').innerHTML = txt;
+
+            const mList = document.getElementById('material-liste');
+            mList.innerHTML = "";
+            
+            d.material.forEach(m => {
+                const match = m.match(/^([\d.,]+)/);
+                if (match) {
+                    const basisMenge = parseFloat(match[1].replace(',', '.'));
+                    const restText = m.replace(match[0], '');
+                    let finalMenge = 0;
+
+                    // Intelligente Skalierungs-Logik basierend auf der Gewerk-Einheit
+                    if (gewerkObj.einheit === "Stueck") {
+                        // Bei reinen Stückgütern (z.B. Fenster) wird die Basis-Anzahl starr multipliziert und sauber gerundet
+                        finalMenge = Math.round(basisMenge * mVal);
+                    } else if (gewerkObj.einheit === "Meter") {
+                        if (restText.toLowerCase().includes("stueck") || restText.toLowerCase().includes("kartusche") || restText.toLowerCase().includes("rolle")) {
+                            // Kleinteile/Zubehör bei Meter-Angaben (z.B. Endkappen oder Dichtband) werden logisch aufgerundet
+                            finalMenge = Math.ceil(basisMenge * (mVal / 10)); 
+                            if(finalMenge < 1) finalMenge = 1;
+                        } else {
+                            // Hauptmaterialien (wie die eigentliche Rinne oder Rohre) skalieren direkt mit den Metern mit
+                            finalMenge = (basisMenge * mVal).toFixed(1);
+                        }
+                    } else {
+                        // Standard m² Berechnung
+                        finalMenge = (basisMenge * mVal).toFixed(1);
+                    }
+
+                    // Formatierung säubern (.0 Abschneiden)
+                    finalMenge = finalMenge.toString().replace('.0', '');
+                    mList.innerHTML += `<li><strong>${finalMenge}</strong>${restText}</li>`;
+                } else {
+                    mList.innerHTML += `<li>${m}</li>`;
+                }
+            });
+
+            const wList = document.getElementById('werkzeug-liste');
+            wList.innerHTML = "";
+            d.werkzeug.forEach(w => wList.innerHTML += `<li>${w}</li>`);
+
+            const cContainer = document.getElementById('checkliste-container');
+            cContainer.innerHTML = "";
+            d.schritte.forEach((s) => {
+                cContainer.innerHTML += `
+                    <label class="flex items-start gap-3 cursor-pointer py-1">
+                        <input type="checkbox" class="mt-1 rounded-sm border-gray-650 bg-gray-700 text-blue-500 focus:ring-0">
+                        <span>${s}</span>
+                    </label>
+                `;
+            });
+
+            document.getElementById('ergebnis-box').classList.remove('hidden');
+        }
+
+        window.openLegend = function(k) {
+            document.getElementById('modal-title').textContent = k;
+            document.getElementById('modal-desc').textContent = legende[k] || "Keine Beschreibung vorhanden.";
+            document.getElementById('legend-modal').classList.remove('hidden');
+        };
+
+        function closeLegend() {
+            document.getElementById('legend-modal').classList.add('hidden');
+        }
+
+        function exportFile(f) {
+            let content = "";
+            if (f === 'gewerke.json') content = JSON.stringify(gewerkeDaten, null, 2);
+            else if (f === 'index.html') {
+                content = document.documentElement.outerHTML;
+            }
+            const blob = new Blob([content], { type: 'text/plain' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = f;
+            link.click();
+        }
+    </script>
+<div style="color: red">Word to HTML Testversion - bitte <a href="https://wordtohtml.net/site/payment">Gehen Sie PRO</a>, um vollständiges HTML zu erhalten.</div>
+</body></html>
